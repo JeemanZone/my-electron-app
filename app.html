@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<title>简单内容块阅读器</title>
+<script src="lib/bootstrap.bundle.min.js"></script>
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="css/bootstrap.min.css">
+<link rel="stylesheet" href="font/bootstrap-icons.css">
+<style>
+    .children-toggler:hover {
+        cursor: pointer;
+    }
+    .children-toggler {
+        position: absolute;
+        bottom: 1px;
+        right: 5px;
+        padding: 0 2px 2px 2px;
+    }
+    li.breadcrum-item {
+        max-width: 400px;
+    }
+    .block-content {
+        white-space: pre-line;
+        position: relative;
+        padding: 2px 22px 2px 2px;
+    }
+    .block-viewer .block-viewer{
+        margin-left: 15px;
+    }
+</style>
+</head>
+<body class="bg-dark">
+<div id="app" class="container">
+    <h1 style="text-align: center;" class="text-light">{{title}}</h1>
+    <button type="button" class="btn btn-secondary" @click="getFileData()">导入JSON文件</button>
+    <button type="button" class="btn btn-secondary" @click="saveData()">保存为JSON文件</button>
+    <div class="input-group mb-3 mt-1">
+        <input type="text" class="form-control" v-model="url" placeholder="输入URL导入网络数据">
+        <button class="btn btn-secondary" type="button" @click="getUrlData()">导入网络数据</button>
+    </div>
+
+    <!-- 显示后代 -->
+    <template v-if="block !== null">
+        <block-viewer 
+            v-bind:node="block" 
+            v-bind:key="block.id"></block-viewer>
+    </template>
+</div>
+
+<script type="text/x-template" id="block-viewer">
+    <div class="block-viewer">
+        <div class="border-top border-light m-1 text-light block-content" 
+            @click.alt.exact.right.prevent="showId()" >{{node.content}}
+            <i v-if="node.hasOwnProperty('children') && Array.isArray(node.children) && node.children.length > 0" 
+                class="children-toggler bi" 
+                :class="toggleChildrenIcon()"
+                @click="showChildren = !showChildren"></i>
+        </div>
+        <template v-if="node.hasOwnProperty('children') && Array.isArray(node.children)">
+            <block-viewer v-show="showChildren" 
+                v-for="child in node.children" 
+                v-bind:node="child" 
+                v-bind:key="child.id"></block-viewer>
+        </template>
+    </div>
+</script>
+<script src="lib/vue.js"></script>
+<script src="js/renderer.js"></script>
+</body>
+</html>
